@@ -1,0 +1,34 @@
+{
+  "pulled": "2026-10-04",
+  "wikipedia_revisions": {
+    "ratings": 1371496892,
+    "halftime": 1373962383
+  },
+  "files": {
+    "superbowl-ads.csv": {
+      "url": "https://raw.githubusercontent.com/fivethirtyeight/superbowl-ads/b65e23360cb165676806865ebc84207c0a5f5b63/superbowl-ads.csv",
+      "bytes": 38580,
+      "sha256": "22de42db7b7b1e2cc96c07c08dec94c970033042b9f3969b982235dfbd7bc78a"
+    },
+    "youtube.csv": {
+      "url": "https://raw.githubusercontent.com/rfordatascience/tidytuesday/fa1a9c3e6c3bcf7a30fd5823c59c7aeb7f44a973/data/2021/2021-03-02/youtube.csv",
+      "bytes": 144884,
+      "sha256": "d5c19cd73d78edb534bd8a9fe6e303135f6cd54238e6644f8df7a1e292a25caf"
+    },
+    "wiki_ratings.json": {
+      "url": "https://en.wikipedia.org/w/api.php?action=parse&oldid=1371496892&prop=text%7Crevid&format=json&formatversion=2",
+      "bytes": 677945,
+      "sha256": "77e8fcd957d8b5ff53bf98f351ecc943dd4b7e15957cc83969fb7ba96039de16"
+    },
+    "wiki_halftime.json": {
+      "url": "https://en.wikipedia.org/w/api.php?action=parse&oldid=1373962383&prop=text%7Crevid&format=json&formatversion=2",
+      "bytes": 378240,
+      "sha256": "d07f7930425d3da6ebb0e87923750d70a232ec02ca721768430de12626715442"
+    },
+    "cpiaucns.csv": {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCNS",
+      "bytes": 25074,
+      "sha256": "f79e3a78837142293449cee4a1a9b1da7be677fb3e989ffb2ef48e8e7cf4cdd7"
+    }
+  }
+}
