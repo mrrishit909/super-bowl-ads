@@ -10,7 +10,7 @@
 #      and the 2026 CPI year is incomplete, so they are shown but not fitted. The household rating (% of TV homes) gets a linear trend in points per decade.
 # B. Halftime: the listed halftime audience against the game's, with the headliners from the second Wikipedia page.
 # C. The ads (FiveThirtyEight tags + TidyTuesday YouTube counts), one row per ad after removing the repeated rows.
-#    - prevalence of each tag overall and 2000-09 against 2010-20 (Fisher exact test);
+#    - prevalence of each tag overall and 2000-09 against 2010-20 (Fisher exact test; and Mantel-Haenszel stratified by brand, because the brand mix changed between the periods);
 #    - ads per brand;
 #    - views against tags: OLS of log(views) on the 7 tags (1) alone, (2) + log days since the video was uploaded (views accumulate with age),
 #      (3) + brand fixed effects (brands repeat; some brands just draw more views), (4) + Super Bowl year fixed effects. Coefficients are shown as the % difference in views;
@@ -128,8 +128,10 @@ out(audit, "audit")
 early <- ads$year <= 2009
 tg <- do.call(rbind, lapply(tags, function(t) {
   a <- sum(ads[[t]][early]); b <- sum(early) - a; c <- sum(ads[[t]][!early]); d <- sum(!early) - c
+  # the same comparison inside each brand (Mantel-Haenszel over the 10 brands): is the shift only a change in which brands advertised?
+  arr <- table(period = factor(ifelse(early, "early", "late"), levels = c("late", "early")), yes = factor(ads[[t]], levels = 1:0), brand = ads$brand); mh <- mantelhaen.test(arr, correct = FALSE)
   data.frame(tag = t, n_yes = sum(ads[[t]]), pct_all = 100 * mean(ads[[t]]), n_2000_09 = a, pct_2000_09 = 100 * a / sum(early), n_2010_20 = c, pct_2010_20 = 100 * c / sum(!early),
-             diff_pts = 100 * (c / sum(!early) - a / sum(early)), fisher_p = fisher.test(matrix(c(a, b, c, d), 2))$p.value) }))
+             diff_pts = 100 * (c / sum(!early) - a / sum(early)), fisher_p = fisher.test(matrix(c(a, b, c, d), 2))$p.value, mh_or_late_vs_early = unname(mh$estimate), mh_p = mh$p.value) }))
 out(tg, "ads_tags")
 S$ads_total <- nrow(ads); S$ads_2000_09 <- sum(early); S$ads_2010_20 <- sum(!early)
 S$tags_per_ad_mean <- mean(rowSums(ads[tags])); S$ads_no_tag_except_product <- sum(rowSums(ads[setdiff(tags, "show_product_quickly")]) == 0)

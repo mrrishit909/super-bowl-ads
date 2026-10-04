@@ -321,6 +321,7 @@ def main():
     assert len(rd("audit")) == len(A)
 
     early = [a for a in ads if a["year"] <= 2009]; late = [a for a in ads if a["year"] > 2009]
+    brands = sorted({a["brand"] for a in ads})
     for r in rd("ads_tags"):
         t = r["tag"]; a, c = sum(x[t] for x in early), sum(x[t] for x in late)
         agree(f"tag {t} n_yes", a + c, r["n_yes"], 0); agree(f"tag {t} pct_all", 100 * (a + c) / len(ads), r["pct_all"])
@@ -328,8 +329,16 @@ def main():
         agree(f"tag {t} n_late", c, r["n_2010_20"], 0); agree(f"tag {t} pct_late", 100 * c / len(late), r["pct_2010_20"])
         agree(f"tag {t} diff", 100 * (c / len(late) - a / len(early)), r["diff_pts"])
         agree(f"tag {t} fisher", fisher_p(a, len(early) - a, c, len(late) - c), r["fisher_p"], 1e-6)
+        num_mh = den_mh = ex = var = 0.0                      # Mantel-Haenszel odds ratio (2010-20 vs 2000-09) and chi-square test across brands, no continuity correction
+        for b_ in brands:
+            e_, l_ = [x for x in early if x["brand"] == b_], [x for x in late if x["brand"] == b_]
+            n1, n0 = len(l_), len(e_); n_ = n1 + n0
+            ya, yb = sum(x[t] for x in l_), sum(x[t] for x in e_)         # late yes, early yes
+            m1 = ya + yb; m0 = n_ - m1
+            num_mh += ya * (n0 - yb) / n_; den_mh += (n1 - ya) * yb / n_
+            ex += ya - n1 * m1 / n_; var += n1 * n0 * m1 * m0 / (n_ * n_ * (n_ - 1))
+        agree(f"tag {t} mh_or", num_mh / den_mh, r["mh_or_late_vs_early"]); agree(f"tag {t} mh_p", math.erfc(math.sqrt(ex * ex / var / 2)), r["mh_p"], 1e-6)
 
-    brands = sorted({a["brand"] for a in ads})
     br = rd("brands"); assert [r["brand"] for r in br] == sorted(brands, key=lambda b: (-sum(a["brand"] == b for a in ads), b))
     for r in br:
         s = [a for a in ads if a["brand"] == r["brand"]]; w = [a for a in s if a["views"] is not None]
